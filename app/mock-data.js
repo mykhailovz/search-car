@@ -173,54 +173,68 @@ function normalizeCarModelTypeList(collection) {
 }
 
 function normalizeCarModelTypeItem(item) {
+  let carRegex = {
+    'C-Max2': /\d+$/
+  };
+
   let clonedStr = item.toLowerCase().trim().replace(/-/g, '');
+
+  if (item in carRegex) {
+    clonedStr = clonedStr.replace(carRegex[item], '');
+  }
 
   return clonedStr;
 }
 
 function removeBrackets(str) {
-  let bracketLength = str.match(/[()]/g).length;
-  let START = 0;
-  let END = 0;
+  let regex = new RegExp(/[()]/g);
 
-  let normalizedString = '';
-
-  switch (bracketLength) {
-    case 2: {
-      START = str.indexOf('(');
-      END = str.indexOf(')');
-      normalizedString = str.slice(0, START - 1);
-      break;
-    }
-
-    case 4: {
-      let firstOpenBracket = str.indexOf('(');
-      let secondOpenBracket = str.indexOf('(', firstOpenBracket + 1);
-      let firstClosedBracket = str.indexOf(')', firstOpenBracket + 1);
-
-      if (firstClosedBracket < secondOpenBracket) {
-        let START = str.indexOf(')');
-        let END = str.indexOf('(', START + 1);
-
-        normalizedString = str.slice(0, END - 1); 
-      } else {
-        let END = str.indexOf('(');
-
-        normalizedString = str.slice(0, END - 1);
+  if (regex.test(str)) {
+    let bracketLength = str.match(/[()]/g).length;
+    let START = 0;
+    let END = 0;
+  
+    let normalizedString = '';
+  
+    switch (bracketLength) {
+      case 2: {
+        START = str.indexOf('(');
+        END = str.indexOf(')');
+        normalizedString = str.slice(0, START - 1);
+        break;
       }
-      break;
+  
+      case 4: {
+        let firstOpenBracket = str.indexOf('(');
+        let secondOpenBracket = str.indexOf('(', firstOpenBracket + 1);
+        let firstClosedBracket = str.indexOf(')', firstOpenBracket + 1);
+  
+        if (firstClosedBracket < secondOpenBracket) {
+          let START = str.indexOf(')');
+          let END = str.indexOf('(', START + 1);
+  
+          normalizedString = str.slice(0, END - 1); 
+        } else {
+          let END = str.indexOf('(');
+  
+          normalizedString = str.slice(0, END - 1);
+        }
+        break;
+      }
+  
+      case 6: {
+        let startPos = str.indexOf(')');
+        START = str.indexOf('(', startPos);
+        END = str.lastIndexOf(')');
+        normalizedString = str.slice(0, START - 1);
+        break;
+      }
     }
 
-    case 6: {
-      let startPos = str.indexOf(')');
-      START = str.indexOf('(', startPos);
-      END = str.lastIndexOf(')');
-      normalizedString = str.slice(0, START - 1);
-      break;
-    }
+    return normalizedString;
+  } else {
+    return str;
   }
-
-  return normalizedString;
 }
 
 function findMatcingCarModelType(carModelType, carModelTypeList) {

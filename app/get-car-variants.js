@@ -8,6 +8,7 @@ let carVariantUrl = mock.url.carVariantUrl;
 
 function getCode(value, options) {
   let result = options.filter(item => {
+    console.log(item);
     return item.message === value;
   })[0];
 
@@ -17,6 +18,8 @@ function getCode(value, options) {
 }
 
 function getCarVariants(carBrand, selectedYear, carModel) {
+  console.log(`>>>>`, selectedYear);
+  carModel = mock.normalizeCarModelTypeItem(carModel);
   let carCode = getCode(carBrand, mock.carCodes);
 
   return rp(`${baseUrl}?bilmerkeNr=${carCode}`)
@@ -33,7 +36,8 @@ function getCarVariants(carBrand, selectedYear, carModel) {
     })
     .then(response => {
       let carVariants = JSON.parse(response);
-      let carModelNumber = getCode(carModel, carVariants).split(':')[0];
+      let normalizedCarVariants = mock.normalizeCarModelTypeList(carVariants);
+      let carModelNumber = getCode(carModel, normalizedCarVariants).split(':')[0];
 
       carVariants.forEach(carModel => {
         if (carModelNumber === carModel.code.split(':')[0]) {

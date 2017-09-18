@@ -10,7 +10,7 @@ const baseUrl = 'https://tribe-back-end-dev.herokuapp.com/public/ofv/data'
 
 const endpoint = 'https://www.finansportalen.no/forsikring/bilforsikring/';
 
-const carRegNumber = 'RH74478';
+const carRegNumber = 'YU39890';
 
 function getAllCarInfo(carRegNumber) {
   return rp(`${baseUrl}/${carRegNumber}`);
@@ -54,22 +54,17 @@ getAllCarInfo(carRegNumber)
     getCarModule.getCarVariants(carBrand, carRegistrationYear, carModel).then(carModelTypes => {
       let normCarVariant = mock.normalizeCarModelTypeItem(carModelType);
       let normCarVariants = mock.normalizeCarModelTypeList(carModelTypes);
-      console.log()
+
       let findCarVariant = mock.findMatcingCarModelType(normCarVariant, normCarVariants);
 
-      console.log(`>>`, findCarVariant);
       if (!findCarVariant) {
         carRegistrationYear  = Number(carRegistrationYear) + 1;
         console.log(`here #1`, carRegistrationYear)
       }
-    });
-
-    console.log(`here #2`, carRegistrationYear);
-
 
       nightmare
       .goto(endpoint)
-  
+
       .wait(15000)
       .evaluate((carBrand) => {
         let elem = document.querySelector(`select[name="brand"]`);
@@ -120,7 +115,6 @@ getAllCarInfo(carRegNumber)
           let clonedCollection = collection.map(item => Object.assign({}, item));
         
           clonedCollection.map(item => {
-            // item.message = removeBrackets(item.message);
             item.message = item.message.toLowerCase().trim();
             item.message = item.message.replace(/-/g, '');
           });
@@ -129,8 +123,16 @@ getAllCarInfo(carRegNumber)
         }
   
         function normalizeItem(item) {
+          let carRegex = {
+            'C-Max2': /\d+$/
+          };
+
           let clonedStr = item.toLowerCase().trim().replace(/-/g, '');
-        
+
+          if (item in carRegex) {
+            clonedStr = clonedStr.replace(carRegex[item], '');
+          }
+
           return clonedStr;
         }
   
@@ -284,25 +286,11 @@ getAllCarInfo(carRegNumber)
         let findModelType = findMatchingCar(normCarVariant, normCarsCollection);
   
         console.log(findModelType);
-        /*
-        options.forEach(item => {
-          if (item.code === findModelType.code) {
-            console.log('here');
-            angular.element(elem).scope().questions.modelType.value = ('string:' + findModelType.code);
-            elem.value = ('string:' + findModelType.code);
-            
-            // -------------------------------------- //
-            var event = document.createEvent('HTMLEvents');
-            event.initEvent('change', true, true);
-            elem.dispatchEvent(event);
-          }
-        });
-        */
+
         for (let i = 0; i < options.length; i++) {
           if (options[i].code === findModelType.code) {
             angular.element(elem).scope().questions.modelType.value = ('string:' + findModelType.code);
             elem.value = ('string:' + findModelType.code);
-            // ------------------------------------- //
             var event = document.createEvent('HTMLEvents');
             event.initEvent('change', true, true);
             elem.dispatchEvent(event);
@@ -321,9 +309,7 @@ getAllCarInfo(carRegNumber)
         console.log('error'.red, `${err}`.bgRed);
         console.log(JSON.stringify(err));
       })
- 
-
-
+    });
   })
   .catch(err => {
   console.log(`Error with in request`.bgRed.yellow);
