@@ -37,6 +37,8 @@ function getCarVariants(carBrand, selectedYear, carModel) {
     .then(response => {
       let carVariants = JSON.parse(response);
       let normalizedCarVariants = mock.normalizeCarModelTypeList(carVariants);
+      // here should be normalized carModels
+      console.log(`>>`, normalizedCarVariants);
       let carModelNumber = getCode(carModel, normalizedCarVariants).split(':')[0];
 
       carVariants.forEach(carModel => {
