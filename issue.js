@@ -4,8 +4,11 @@ let problemCarNumbers = [
   { 'JV11763': 'same issue no car for specified year', 'solution': {'#1': 'set year + 1'} },
   { 'FT27520': 'same issue no car for specified year', 'solution': {'#1': 'set year + 1'} },
   { 'EL80426': 'no car type in response for all bmw i3', 'solution': { '#1': 'handle'} },
+  { 'AS15240': 'carModel is carModel is C-Max2', 'solution': {'#1': 'need to remove a last digit to normalize C-Max2->C-Max'}},
+  { 'YU39890': 'same issue no car for specified year AND NEED TO SET CAR MODEL' },
 ];
 
+// KH84029 no car in list
 
 let cars = [
   'JD59786', // Audi

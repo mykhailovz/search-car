@@ -2,13 +2,14 @@ const rp = require('request-promise');
 
 const mock = require('./mock-data'); 
 
+const normalize = require('./normailze-string');
+
 let baseUrl = mock.url.baseUrl;
 let classifyUrl = mock.url.classifyUrl;
 let carVariantUrl = mock.url.carVariantUrl;
 
 function getCode(value, options) {
   let result = options.filter(item => {
-    console.log(item);
     return item.message === value;
   })[0];
 
@@ -18,8 +19,7 @@ function getCode(value, options) {
 }
 
 function getCarVariants(carBrand, selectedYear, carModel) {
-  console.log(`>>>>`, selectedYear);
-  carModel = mock.normalizeCarModelTypeItem(carModel);
+  carModel = normalize.normalizeCarModelItem(carModel);
   let carCode = getCode(carBrand, mock.carCodes);
 
   return rp(`${baseUrl}?bilmerkeNr=${carCode}`)
@@ -36,10 +36,10 @@ function getCarVariants(carBrand, selectedYear, carModel) {
     })
     .then(response => {
       let carVariants = JSON.parse(response);
-      let normalizedCarVariants = mock.normalizeCarModelTypeList(carVariants);
-      // here should be normalized carModels
-      console.log(`>>`, normalizedCarVariants);
-      let carModelNumber = getCode(carModel, normalizedCarVariants).split(':')[0];
+      let choosenCarModel;
+      let normalizedCarVariants = normalize.normalizeCarModelList(carVariants);
+      let carModelNumber = normalize.findMatchingCarModel(carModel, normalizedCarVariants);
+      carModelNumber = carModelNumber.code.split(':')[0];
 
       carVariants.forEach(carModel => {
         if (carModelNumber === carModel.code.split(':')[0]) {
