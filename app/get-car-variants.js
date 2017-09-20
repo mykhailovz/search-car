@@ -1,6 +1,6 @@
 const rp = require('request-promise');
 
-const mock = require('./mock-data'); 
+const mock = require('./mock-data');
 
 const normalize = require('./normailze-string');
 
