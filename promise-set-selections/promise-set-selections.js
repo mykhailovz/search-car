@@ -37,27 +37,67 @@ function getCarModels(carBrand, carYear) {
            }));
 }
 
-
-// not finished
 function getCarVariants(carBrand, carYear, carModel, carModelType) {
   let carCode = getCode(carBrand, mock.carCodes);
-  let carModels = getCarModels(carBrand, carYear);
+  let normalizedCarModels = getCarModels(carBrand, carYear);
+  let normalizeCarModelItem = normalize.normalizeCarModelItem(carModel);
 
-  return carModels.then(result => {
-    console.log(result)
-    // let normalizedCarModels = normalize.normalizeCarModelList(result);
-    // return normalizedCarModels;
+  if (carModel.includes('(')) {
+    let start = carModel.indexOf('(');
+    let end = carModel.indexOf(')');
+    carYear = carModel.slice(start+1, end).trim();
+  }
+  
+  return normalizedCarModels.then(result => {
+    let matchedCarModel = normalize.findMatchingCarModel(normalizeCarModelItem, result);
+    let carModelCode = matchedCarModel.code.split(':')[0];
+    let modelYear;
+
+    if (matchedCarModel.message.includes('(')) {
+      let start = matchedCarModel.message.indexOf('(');
+      let end = matchedCarModel.message.indexOf(')');
+      modelYear = String(matchedCarModel.message.slice(start+1, end).trim());
+    } else {
+      modelYear = carYear;
+    }
+
+    return rp(
+      `${carVariantUrl}
+      ?bilmerkeNr=${carCode}
+      &registreringsaar=${carYear}
+      &modellNr=${carModelCode}
+      &modellaar=${modelYear}` // carYear
+    ).then(response => JSON.parse(response))
+     .map(carVariant => ({
+        code: carVariant.code,
+        message: normalize.normalizeCarModelTypeItem(carVariant.message)
+     }));
   });
 
-  // return rp(`${carVariantUrl}?bilmerkeNr=${carCode}&registreringsaar=${carYear}&modellNr=${choosenCarModel}&modellaar=${carYear}`)
 }
-// not finished
 
-let carBrand = 'Audi';
-let carYear = '2000';
-let carModel = 'A2 ( 2001 ) ';
-let carModelType = '1,4 ( Combi-Coupè Udefinert )';
+let carBrand = 'Hyundai';
+let carYear = '2008';
+let carModel = 'Tucson';
+let carModelType = '2,0 CRDI Comfort 4WD';
 
-getCarVariants(carBrand, carYear, carModel, carModelType).then(result => {
-  console.log('end');
-});
+function recursive(carBrand, carYear, carModel, carModelType) {
+  return getCarVariants(carBrand, carYear, carModel, carModelType).then((result) => {
+
+    let normalizedCarModelType = normalize.normalizeCarModelTypeItem(carModelType);
+    let carMatched = normalize.findMatcingCarModelType(normalizedCarModelType, result);
+
+
+    console.log(`FIND RESULT`, carMatched);
+    if (!carMatched) {
+      carYear = Number(carYear) + 1;
+      return recursive(carBrand, carYear, carModel, carModelType)
+    } else {
+      return carMatched;
+    }
+  })
+}
+
+
+recursive(carBrand, carYear, carModel, carModelType)
+  .then(result => console.log(result));

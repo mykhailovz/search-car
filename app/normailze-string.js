@@ -122,8 +122,8 @@ function findMatcingCarModelType(carModelType, carModelTypeList) {
       if (carItem.message.indexOf(carModelType) !== -1) {
         matches.push(carItem);
       }
-    });
-    console.log(matches);
+  });
+
     if (matches.length > 1) {
       for (let i = 0; i < matches.length; i++) {
         if (matches[i].message === carModelType) {
@@ -138,8 +138,9 @@ function findMatcingCarModelType(carModelType, carModelTypeList) {
       }
 
     } else {
+
       return matches[0];
-    }  
+    }
 }
 
 module.exports = {
