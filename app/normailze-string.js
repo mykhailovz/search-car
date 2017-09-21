@@ -52,6 +52,18 @@ function findMatchingCarModel(carModelOptional, modelList) {
   return matches;
 }
 
+function getCarMatchedCarModels(carModelOptional, modelList) {
+  const matches = [];
+
+  modelList.map(modelItem => {
+    if (modelItem.message.indexOf(carModelOptional) !== -1) {
+      matches.push(modelItem);
+    }
+  });
+
+  return matches;
+}
+
 function normalizeCarModelTypeItem(item) {
   let clonedStr = item.toLowerCase().trim().replace(/-/g, '');
 
@@ -150,5 +162,6 @@ module.exports = {
   normalizeCarModelTypeItem,
   normalizeCarModelTypeList,
   removeBrackets,
-  findMatcingCarModelType
+  findMatcingCarModelType,
+  getCarMatchedCarModels
 };

@@ -4,9 +4,20 @@ const mock = require('../app/mock-data');
 
 const normalize = require('../app/normailze-string');
 
+const normalizeCarModelItem = require('../app/normailze-string').normalizeCarModelTypeItem;
+const normalizeCarModelList = require('../app/normailze-string').normalizeCarModelList;
+const normalizeCarModelTypeItem = require('../app/normailze-string').normalizeCarModelTypeItem;
+const normalizeCarModelTypeList = require('../app/normailze-string').normalizeCarModelTypeList;
+const findMatchingCarModel = require('../app/normailze-string').findMatchingCarModel;
+const findMatcingCarModelType = require('../app/normailze-string').findMatcingCarModelType;
+const getCarMatchedCarModels = require('../app/normailze-string').getCarMatchedCarModels;
+
 let baseUrl = mock.url.baseUrl;
 let classifyUrl = mock.url.classifyUrl;
 let carVariantUrl = mock.url.carVariantUrl;
+
+const GLOBAL_CAR_MODEL_MATCHES = [];
+
 
 function getCode(value, options) {
   let result = options.filter(item => {
@@ -81,7 +92,7 @@ let carYear = '2008';
 let carModel = 'Tucson';
 let carModelType = '2,0 CRDI Comfort 4WD';
 
-function recursive(carBrand, carYear, carModel, carModelType) {
+function recursiveSearch(carBrand, carYear, carModel, carModelType) {
   return getCarVariants(carBrand, carYear, carModel, carModelType).then((result) => {
 
     let normalizedCarModelType = normalize.normalizeCarModelTypeItem(carModelType);
@@ -91,7 +102,7 @@ function recursive(carBrand, carYear, carModel, carModelType) {
     console.log(`FIND RESULT`, carMatched);
     if (!carMatched) {
       carYear = Number(carYear) + 1;
-      return recursive(carBrand, carYear, carModel, carModelType)
+      return recursiveSearch(carBrand, carYear, carModel, carModelType)
     } else {
       return carMatched;
     }
@@ -99,5 +110,5 @@ function recursive(carBrand, carYear, carModel, carModelType) {
 }
 
 
-recursive(carBrand, carYear, carModel, carModelType)
+recursiveSearch(carBrand, carYear, carModel, carModelType)
   .then(result => console.log(result));
