@@ -1,4 +1,5 @@
 const rp = require('request-promise');
+const colors = require('colors');
 
 const carCodes = require('../app/mock-data').carCodes;
 const mock = require('../app/mock-data');
@@ -55,7 +56,7 @@ function getAllCarInfo(carRegNumber) {
   return rp(`${baseUrlInfo}/${carRegNumber}`);
 }
 
-let carRegNumber = 'DL39474';
+let carRegNumber = 'DL95288';
 
 getAllCarInfo(carRegNumber)
   .then((response) => {
@@ -66,6 +67,13 @@ getAllCarInfo(carRegNumber)
     let carRegistrationYear = short.yearModel;
     let carModel = short.modelName;
     let carModelType = short.variantName;
+
+    console.log(
+      `[${carBrand}]`.bgRed.yellow,
+      `[${carRegistrationYear}]`.bgRed.yellow,
+      `[${carModel}]`.bgRed.yellow,
+      `[${carModelType}]`.bgRed.yellow
+    );
 
     //------//
     let carData =  {
@@ -126,12 +134,14 @@ getAllCarInfo(carRegNumber)
             .then(response => JSON.parse(response))
             .map(carVariant => ({
               code: carVariant.code,
-              message: normalizeCarModelTypeItem(carVariant.message)
+              message: carVariant.message // message: normalizeCarModelTypeItem(carVariant.message)
             }))
             .then(result => {
-              let carMatched = findMatcingCarModelType(normailzedCarModelTypeItem, result);
+              let normlizedCarModelTypeList = normalizeCarModelTypeList(result);
+              let carMatched = findMatcingCarModelType(normailzedCarModelTypeItem, normlizedCarModelTypeList);
               if (carMatched) {
                 resolver(carMatched);
+                return; // test feature
               } else {
                 modelList.splice(0, 1);
                 getForVariants(modelList, year, resolver);
@@ -149,4 +159,7 @@ getAllCarInfo(carRegNumber)
       console.log(res);
     });
 
-  });
+  })
+  .catch((err) => {
+    console.log('There is no correct response from OFV service')
+  })
