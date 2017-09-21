@@ -10,14 +10,14 @@ const normalizeCarModelTypeItem = require('../app/normailze-string').normalizeCa
 const normalizeCarModelTypeList = require('../app/normailze-string').normalizeCarModelTypeList;
 const findMatchingCarModel = require('../app/normailze-string').findMatchingCarModel;
 const findMatcingCarModelType = require('../app/normailze-string').findMatcingCarModelType;
-const getCarMatchedCarModels = require('../app/normailze-string').getCarMatchedCarModels;
+const getMatchedCarModels = require('../app/normailze-string').getMatchedCarModels;
 
 let baseUrl = mock.url.baseUrl;
 let classifyUrl = mock.url.classifyUrl;
 let carVariantUrl = mock.url.carVariantUrl;
 
-const GLOBAL_CAR_MODEL_MATCHES = [];
-
+let GLOBAL_CAR_MODEL_MATCHES = [];
+let COUNTER = 0;
 
 function getCode(value, options) {
   let result = options.filter(item => {
@@ -53,13 +53,9 @@ function getCarVariants(carBrand, carYear, carModel, carModelType) {
   let normalizedCarModels = getCarModels(carBrand, carYear);
   let normalizeCarModelItem = normalize.normalizeCarModelItem(carModel);
 
-  if (carModel.includes('(')) {
-    let start = carModel.indexOf('(');
-    let end = carModel.indexOf(')');
-    carYear = carModel.slice(start+1, end).trim();
-  }
-  
   return normalizedCarModels.then(result => {
+    GLOBAL_CAR_MODEL_MATCHES = getMatchedCarModels(normalizeCarModelItem, result);
+
     let matchedCarModel = normalize.findMatchingCarModel(normalizeCarModelItem, result);
     let carModelCode = matchedCarModel.code.split(':')[0];
     let modelYear;
@@ -84,7 +80,6 @@ function getCarVariants(carBrand, carYear, carModel, carModelType) {
         message: normalize.normalizeCarModelTypeItem(carVariant.message)
      }));
   });
-
 }
 
 let carBrand = 'Hyundai';
@@ -93,12 +88,11 @@ let carModel = 'Tucson';
 let carModelType = '2,0 CRDI Comfort 4WD';
 
 function recursiveSearch(carBrand, carYear, carModel, carModelType) {
-  return getCarVariants(carBrand, carYear, carModel, carModelType).then((result) => {
 
+  return getCarVariants(carBrand, carYear, carModel, carModelType).then((result) => {
     let normalizedCarModelType = normalize.normalizeCarModelTypeItem(carModelType);
     let carMatched = normalize.findMatcingCarModelType(normalizedCarModelType, result);
-
-
+    console.log(result);
     console.log(`FIND RESULT`, carMatched);
     if (!carMatched) {
       carYear = Number(carYear) + 1;
@@ -106,9 +100,9 @@ function recursiveSearch(carBrand, carYear, carModel, carModelType) {
     } else {
       return carMatched;
     }
-  })
-}
+  });
 
+}
 
 recursiveSearch(carBrand, carYear, carModel, carModelType)
   .then(result => console.log(result));

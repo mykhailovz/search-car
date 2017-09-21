@@ -52,7 +52,7 @@ function findMatchingCarModel(carModelOptional, modelList) {
   return matches;
 }
 
-function getCarMatchedCarModels(carModelOptional, modelList) {
+function getMatchedCarModels(carModelOptional, modelList) {
   const matches = [];
 
   modelList.map(modelItem => {
@@ -163,5 +163,5 @@ module.exports = {
   normalizeCarModelTypeList,
   removeBrackets,
   findMatcingCarModelType,
-  getCarMatchedCarModels
+  getMatchedCarModels
 };
