@@ -10,7 +10,7 @@ const baseUrl = 'https://tribe-back-end-dev.herokuapp.com/public/ofv/data'
 
 const endpoint = 'https://www.finansportalen.no/forsikring/bilforsikring/';
 
-const carRegNumber = 'BS14585';
+const carRegNumber = 'KH42466';
 
 function getAllCarInfo(carRegNumber) {
   return rp(`${baseUrl}/${carRegNumber}`);

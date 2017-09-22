@@ -6,6 +6,11 @@ let problemCarNumbers = [
   { 'EL80426': 'no car type in response for all bmw i3', 'solution': { '#1': 'handle'} },
   { 'AS15240': 'carModel is carModel is C-Max2', 'solution': {'#1': 'need to remove a last digit to normalize C-Max2->C-Max'}},
   { 'YU39890': 'same issue no car for specified year AND NEED TO SET CAR MODEL' },
+
+  { 'PD39740': 'NO FIND CAR IN LIST OF CARS' },
+  { 'DN87044': 'NO FIND CAR IN LIST OF CARS' }, // CF65866
+  { 'CF65866': 'NO FIND CAR IN LIST OF CARS' } 
+
 ];
 
 // KH84029 no car in list
