@@ -59,7 +59,7 @@ function getAllCarInfo(carRegNumber) {
   return rp(`${baseUrlInfo}/${carRegNumber}`);
 }
 
-let carRegNumber = 'AR92851';
+let carRegNumber = 'PD39740';
 
 getAllCarInfo(carRegNumber)
   .then((response) => {
@@ -99,28 +99,37 @@ getAllCarInfo(carRegNumber)
     let carCode = getCode(carData.brand, carCodes);
     let normalizedCarModelItem = normalizeCarModelItem(carData.model);
     let normailzedCarModelTypeItem = normalizeCarModelTypeItem(carData.modelType);
-
-    function search() {
-      return new Promise((resolver, reject) => {
     
+    function search() {
+      let COUNTER = 0;
+      return new Promise((resolver, reject) => {
         function getForModels(year, resolver) {
           return rp(`${classifyUrl}?bilmerkeNr=${carCode}&registreringsaar=${year}`)
-            .then(response => JSON.parse(response))
-            .then(result => {
-              let normalizedCarModels = normalizeCarModelList(result);
-              let matchedModels = getMatchedCarModels(normalizedCarModelItem, normalizedCarModels); // find car model matches
-    
-              getForVariants(matchedModels, year, resolver)
-            });
+          .then(response => JSON.parse(response))
+          .then(result => {
+            let normalizedCarModels = normalizeCarModelList(result);
+            let matchedModels = getMatchedCarModels(normalizedCarModelItem, normalizedCarModels); // find car model matches
+            
+            getForVariants(matchedModels, year, resolver)
+          });
         }
         
         function getForVariants(modelList, year, resolver) {
+          COUNTER++;
+
+          console.log(`Searching...`);
+          console.log(`>>`, COUNTER);
+
+          if (COUNTER > 10) {
+            reject({ 'ERROR': 'CAR WAS NOT FOUND'});
+            return;
+          }
+
           if (modelList.length === 0) {
             year++;
             getForModels(year, resolver);
             return;
           }
-          console.log(`Searching...`);
           //*-------------------------------------
           let carModelCode = modelList[0].code.split(':')[0];
           
@@ -413,6 +422,9 @@ getAllCarInfo(carRegNumber)
             console.log(`ERR`, JSON.stringify(err))
           })
 
+      })
+      .catch(err => {
+        console.log(`ERROR>>>`, JSON.stringify(err));
       })
 
   })
