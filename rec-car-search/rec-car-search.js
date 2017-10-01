@@ -101,7 +101,7 @@ getAllCarInfo(carRegNumber)
     let normailzedCarModelTypeItem = normalizeCarModelTypeItem(carData.modelType);
 
     function search() {
-      let COUNT = 0;
+      // let COUNT = 0;
       return new Promise((resolver, reject) => {
     
         function getForModels(year, resolver) {
@@ -116,11 +116,11 @@ getAllCarInfo(carRegNumber)
         }
         
         function getForVariants(modelList, year, resolver) {
-          COUNT++;
-          if (COUNT === 10) {
-            reject({ 'STATUS': 'ERROR', 'MESSAGE': 'CAR CAN NOT BE FOUND '});
-            return;
-          }
+          // COUNT++;
+          // if (COUNT === 10) {
+          //   reject({ 'STATUS': 'ERROR', 'MESSAGE': 'CAR CAN NOT BE FOUND '});
+          //   return;
+          // }
 
           if (modelList.length === 0) {
             year++;
