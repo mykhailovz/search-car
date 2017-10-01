@@ -59,7 +59,7 @@ function getAllCarInfo(carRegNumber) {
   return rp(`${baseUrlInfo}/${carRegNumber}`);
 }
 
-let carRegNumber = 'AR92851';
+let carRegNumber = 'KH42466';
 
 getAllCarInfo(carRegNumber)
   .then((response) => {
@@ -101,6 +101,7 @@ getAllCarInfo(carRegNumber)
     let normailzedCarModelTypeItem = normalizeCarModelTypeItem(carData.modelType);
 
     function search() {
+      let COUNT = 0;
       return new Promise((resolver, reject) => {
     
         function getForModels(year, resolver) {
@@ -115,6 +116,12 @@ getAllCarInfo(carRegNumber)
         }
         
         function getForVariants(modelList, year, resolver) {
+          COUNT++;
+          if (COUNT === 10) {
+            reject({ 'STATUS': 'ERROR', 'MESSAGE': 'CAR CAN NOT BE FOUND '});
+            return;
+          }
+
           if (modelList.length === 0) {
             year++;
             getForModels(year, resolver);
@@ -413,6 +420,9 @@ getAllCarInfo(carRegNumber)
             console.log(`ERR`, JSON.stringify(err))
           })
 
+      })
+      .catch(err => {
+        console.log(JSON.stringify(err));
       })
 
   })
