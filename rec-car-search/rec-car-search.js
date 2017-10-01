@@ -59,7 +59,11 @@ function getAllCarInfo(carRegNumber) {
   return rp(`${baseUrlInfo}/${carRegNumber}`);
 }
 
+<<<<<<< HEAD
 let carRegNumber = 'KH42466';
+=======
+let carRegNumber = 'PD39740';
+>>>>>>> 282fc3c95683fff40b59f091469b985b7581daf3
 
 getAllCarInfo(carRegNumber)
   .then((response) => {
@@ -99,20 +103,19 @@ getAllCarInfo(carRegNumber)
     let carCode = getCode(carData.brand, carCodes);
     let normalizedCarModelItem = normalizeCarModelItem(carData.model);
     let normailzedCarModelTypeItem = normalizeCarModelTypeItem(carData.modelType);
-
+    
     function search() {
       // let COUNT = 0;
       return new Promise((resolver, reject) => {
-    
         function getForModels(year, resolver) {
           return rp(`${classifyUrl}?bilmerkeNr=${carCode}&registreringsaar=${year}`)
-            .then(response => JSON.parse(response))
-            .then(result => {
-              let normalizedCarModels = normalizeCarModelList(result);
-              let matchedModels = getMatchedCarModels(normalizedCarModelItem, normalizedCarModels); // find car model matches
-    
-              getForVariants(matchedModels, year, resolver)
-            });
+          .then(response => JSON.parse(response))
+          .then(result => {
+            let normalizedCarModels = normalizeCarModelList(result);
+            let matchedModels = getMatchedCarModels(normalizedCarModelItem, normalizedCarModels); // find car model matches
+            
+            getForVariants(matchedModels, year, resolver)
+          });
         }
         
         function getForVariants(modelList, year, resolver) {
@@ -127,7 +130,6 @@ getAllCarInfo(carRegNumber)
             getForModels(year, resolver);
             return;
           }
-          console.log(`Searching...`);
           //*-------------------------------------
           let carModelCode = modelList[0].code.split(':')[0];
           
@@ -422,7 +424,11 @@ getAllCarInfo(carRegNumber)
 
       })
       .catch(err => {
+<<<<<<< HEAD
         console.log(JSON.stringify(err));
+=======
+        console.log(`ERROR>>>`, JSON.stringify(err));
+>>>>>>> 282fc3c95683fff40b59f091469b985b7581daf3
       })
 
   })
